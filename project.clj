@@ -4,4 +4,5 @@
   :license {:name "MIT License"
             :url "https://opensource.org/licenses/MIT"}
   :dependencies [[org.clojure/clojure "1.9.0"]
-                 [quil "3.0.0"]])
+                 [quil "3.0.0"]]
+  :main subway-nets.core)
