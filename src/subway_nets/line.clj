@@ -1,7 +1,8 @@
 (ns subway-nets.line
   "Provides the functions to operate over or with subway lines"
   (:require [subway-nets.math :as math]
-            [subway-nets.station :as sn-s]))
+            [subway-nets.station :as sn-s]
+            [clojure.spec.alpha :as s]))
 
 ; ------------------------------- Create a line ------------------------------ ;
 
@@ -10,6 +11,14 @@
   [id stations]
   {:id id :start (first stations) :end (last stations) :stations stations})
 
+(s/fdef subway-line
+  :args (s/and (s/cat :id string? :stations list?)
+               #(not (zero? (count (:stations %))))
+               #(not (empty? (:id %))))
+  :ret map?
+  :fn (s/and #(>= (-> % :ret :stations count) 1)
+             #(= (-> % :ret :start) (-> % :ret :stations first))
+             #(= (-> % :ret :end) (-> % :ret :stations last))))
 
 ; --------------------------- Add stations to lines -------------------------- ;
 
