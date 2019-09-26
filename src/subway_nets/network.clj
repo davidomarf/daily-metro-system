@@ -16,7 +16,10 @@
 (defn all-stations
   "Get a vector with all the stations in the network"
   [net]
-  (map #(-> % :stations) (-> net :lines vals)))
+  ;; Create a vector by iterating over each station in each line
+  (apply conj 
+         (map #(-> % :stations)
+              (-> net :lines))))
 
 (defn heaviest-station
   "Get the station with the highest usage load" 
@@ -37,15 +40,16 @@
   ([limit]
    (g-network limit 0 (subway-network "network")))
   ([limit line-num net]
+   ;; Return the final network once it has enough lines
    (if (>= line-num limit)
      net
-     (let [station (heaviest-station net)]
-       (recur limit
-              (inc line-num)
-              (add-line net
-                        (sn-l/g-line net
-                                     (str "ln-" line-num)
-                                     station)))))))
+     ;; Otherwise, find a pivot: the station with the highest usage load 
+     (recur limit
+            (inc line-num)
+            (add-line net
+                      (sn-l/g-line net
+                                   (str "ln-" line-num)
+                                   (heaviest-station net)))))))
 
 (comment
   (do
@@ -53,50 +57,26 @@
 
     ;; Create an empty network    
     (def empty (subway-network "empty"))
-    empty
-    ;; => {:id "empty", :lines []}
-    
+
     ;; If all the points inside the city had to compute the closest of all the
     ;; stations in the network, the **heaviest station** is the one that is the
     ;; closest for more points.
-    
+
     ;; Get the heaviest station of the network.
     ;; The angle indicates the direction of the new line, and it's a number between
     ;; [0, 1] that will later multiply (2 * PI).
     ;; When the network is empty, coordinates are the middle of the map, and the
     ;; angle is a random number.
     (def pivot (heaviest-station empty))
-    pivot
-    ;; => {:angle 0.026550332688665135, :coordinates {:x 680, :y 355}, :id "st-0"}
     
-    ;; Create a new generated line using the heaviest point as the pivot
+    ;; Create a new generated line using previously generated pivot and empty net
     (def first-line (sn-l/g-line empty
                                  "ln-0"
                                  pivot))
-    first-line
-    ;; => {:end {:angle 0.026550332688665135, :coordinates {:x 10, :y 10}, :id "ln-st4"},
-    ;;     :id "ln-0",
-    ;;     :start {:angle 0.026550332688665135, :coordinates {:x 10, :y 10}, :id "ln-st3"},
-    ;;     :stations [{:angle 0.026550332688665135, :coordinates {:x 10, :y 10}, :id "ln-st3"}
-    ;;                {:angle 0.026550332688665135, :coordinates {:x 10, :y 10}, :id "ln-st1"}
-    ;;                {:angle 0.026550332688665135, :coordinates {:x 680, :y 355}, :id "st-0"}
-    ;;                {:angle 0.026550332688665135, :coordinates {:x 10, :y 10}, :id "ln-st2"}
-    ;;                {:angle 0.026550332688665135, :coordinates {:x 10, :y 10}, :id "ln-st4"}]}
-    
 
+    ;; Test adding first-line to an empty network
     (add-line empty first-line)
-    ;; => {:id "empty",
-    ;;     :lines [{:end {:angle 0.026550332688665135, :coordinates {:x 10, :y 10}, :id "ln-st4"},
-    ;;              :id "ln-0",
-    ;;              :start {:angle 0.026550332688665135, :coordinates {:x 10, :y 10}, :id "ln-st3"},
-    ;;              :stations [{:angle 0.026550332688665135, :coordinates {:x 10, :y 10}, :id "ln-st3"}
-    ;;                         {:angle 0.026550332688665135, :coordinates {:x 10, :y 10}, :id "ln-st1"}
-    ;;                         {:angle 0.026550332688665135, :coordinates {:x 680, :y 355}, :id "st-0"}
-    ;;                         {:angle 0.026550332688665135, :coordinates {:x 10, :y 10}, :id "ln-st2"}
-    ;;                         {:angle 0.026550332688665135, :coordinates {:x 10, :y 10}, :id "ln-st4"}]}]}
-    
+
     ;; The main function. Generate a network with n lines. In this case n = 5;
-    (g-network 5)
-    ;;
-    )
+    (g-network 5))
   )
