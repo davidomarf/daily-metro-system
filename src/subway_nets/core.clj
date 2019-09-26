@@ -2,21 +2,9 @@
   "This is the main file to schedule the task of running the generator
   and publishing a tweet. When experimenting in the REPL, it's best to
   use the namespace subway-nets.examples"
-  (:require [subway-nets.math :as math]
-            [subway-nets.line :as sn-l]
-            [subway-nets.station :as sn-s]
-            [subway-nets.network :as sn-n]
+  (:require [subway-nets.network :as sn-n]
             [quil.core :as q]
-            [quil.middleware :as qm]
-            [clojure.spec.alpha :as s]
-            [voronoi-diagram.core :as voronoi]))
-
-; (let [points [[2 2] [1 4] [4 1] [-10 -10] [-10 10] [10 10] [10 -10]]
-;       {:keys [points edges cells]} (voronoi/diagram points)]
-;   (println "point"  points)
-;   (println "edge" edges)
-;   (println "cell" cells))
-(voronoi/diagram  [[2 2] [1 4] [4 1] [-10 -10] [1000 2000][-10 10] [10 10] [10 -10]])
+            [quil.middleware :as qm]))
 
 ; ---------------------------------------------------------------------------- ;
 ;                                Quil functions                                ;
@@ -27,11 +15,6 @@
   (q/no-loop))
 
 (defn draw []
-  (def network (sn-n/g-network 10))
-  network
-
-  (doseq [line (-> network :lines count range)])
-
   (doseq [img-num (range 10)]
     (q/stroke (q/random 255))             ;; Set the stroke colour to a random grey
     (q/stroke-weight (q/random 10))       ;; Set the stroke thickness randomly
