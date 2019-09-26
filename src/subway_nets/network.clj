@@ -61,14 +61,14 @@
     ;; If all the points inside the city had to compute the closest of all the
     ;; stations in the network, the **heaviest station** is the one that is the
     ;; closest for more points.
-
+    
     ;; Get the heaviest station of the network.
     ;; The angle indicates the direction of the new line, and it's a number between
     ;; [0, 1] that will later multiply (2 * PI).
     ;; When the network is empty, coordinates are the middle of the map, and the
     ;; angle is a random number.
     (def pivot (heaviest-station empty))
-    
+
     ;; Create a new generated line using previously generated pivot and empty net
     (def first-line (sn-l/g-line empty
                                  "ln-0"
@@ -78,5 +78,13 @@
     (add-line empty first-line)
 
     ;; The main function. Generate a network with n lines. In this case n = 5;
-    (g-network 5))
+    (g-network 5)
+    
+    
+    ; --------------------------------- TODO --------------------------------- ;
+    
+    ;; - Proper function to obtain the pivot. Use Voronoi diagrams.
+    ;; - Determine new angle direction for newly created lines.
+    ;; - Obtain angle for existing lines (and stations)
+    )
   )
