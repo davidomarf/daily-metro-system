@@ -42,17 +42,6 @@
           freq (frequencies (map first loads))]
       (apply max-key val freq))))
 
-(first (first {:a 1}))
-(heaviest-station one-line)
-;; => [[680 355 {:angle 0.2524782425380637, :coordinates {:x 680, :y 355}, :id "st-0"}] 794]
-
-(heaviest-station empty)
-;; => [680 355 {:angle 0.21258747056762295, :coordinates {:x 680, :y 355}, :id "st-0"} 1000]
-
-
-(last (first (heaviest-station one-line)))
-;; => {:angle 0.4527176466998135, :coordinates {:x 680, :y 355}, :id "st-0"}
-
 (defn add-line
   "Appends the new line at the end of (net :lines)"
   [net line]
