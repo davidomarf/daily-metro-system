@@ -54,3 +54,29 @@
      (conj new-stations (first stations))
      (recur (rest stations)
             (into new-stations [(first stations) "x"])))))
+
+(defn stations-load
+  "Create a vector that contains all the stations with their usage load"
+  ([stations]
+   ;; Use a default number of 1000 points when no number is specified
+   (stations-load stations 1000 []))
+  ([stations points]
+   (stations-load stations points []))
+  ([stations points usage-loads]
+   (if (<= points 0)
+     usage-loads
+     (let [rand-point [(rand 1360) (rand 710)]]
+       (recur stations
+              (dec points)
+              (conj usage-loads
+                    (math/nearest-neighbor stations rand-point)))))))
+
+(let [rand-point [(rand 50) (rand 60)]]
+  (conj [[[10 20] 9.926457]]
+        (math/nearest-neighbor [[10 20] [30 40] [50 60]] rand-point)))
+
+; (comment 
+  (do
+    ;; stations-load is defined using hard-coded values. Fix this? 
+    )
+  ; )

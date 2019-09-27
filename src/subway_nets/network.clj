@@ -2,9 +2,7 @@
   "Provides the functions to operate over or with the subway network"
   (:require [subway-nets.math :as math]
             [subway-nets.station :as sn-s]
-            [subway-nets.line :as sn-l]
-            [voronoi-diagram.core :as voronoi]))
-
+            [subway-nets.line :as sn-l]))
 
 (defn subway-network
   "Create a subway network map receiving [id] or [id lines]"
@@ -17,17 +15,43 @@
   "Get a vector with all the stations in the network"
   [net]
   ;; Create a vector by iterating over each station in each line
-  (apply conj 
+  (apply conj
          (map #(-> % :stations)
               (-> net :lines))))
 
+(defn stations->points
+  "Convert a vector of ::stations into a vector of [x y {station}]"
+  [stations]
+  (vec (map #(let [coord (-> % :coordinates)]
+               [(:x coord) (:y coord) %]) stations)))
+
 (defn heaviest-station
-  "Get the station with the highest usage load" 
+  "Get the station with the highest usage load. Returns [x y {station} occurences]"
   [net]
   (if (= (-> net :lines count) 0)
-    (sn-s/subway-station "st-0" {:x (/ 1360 2) :y (/ 710 2)})
-    (let [stations (all-stations net)]
-      (first stations))))
+    ;; Use a default station for when there are none in the net
+    (let [station (sn-s/subway-station "st-0" {:x (/ 1360 2) :y (/ 710 2)})]
+      [[(-> station :coordinates :x) 
+       (-> station :coordinates :y)
+       station]
+       1000])
+
+    ;; Compute the loads for the stations
+    (let [point-stations (stations->points (all-stations net))
+          loads (sn-s/stations-load point-stations)
+          freq (frequencies (map first loads))]
+      (apply max-key val freq))))
+
+(first (first {:a 1}))
+(heaviest-station one-line)
+;; => [[680 355 {:angle 0.2524782425380637, :coordinates {:x 680, :y 355}, :id "st-0"}] 794]
+
+(heaviest-station empty)
+;; => [680 355 {:angle 0.21258747056762295, :coordinates {:x 680, :y 355}, :id "st-0"} 1000]
+
+
+(last (first (heaviest-station one-line)))
+;; => {:angle 0.4527176466998135, :coordinates {:x 680, :y 355}, :id "st-0"}
 
 (defn add-line
   "Appends the new line at the end of (net :lines)"
@@ -43,13 +67,12 @@
    ;; Return the final network once it has enough lines
    (if (>= line-num limit)
      net
-     ;; Otherwise, find a pivot: the station with the highest usage load 
-     (recur limit
-            (inc line-num)
-            (add-line net
-                      (sn-l/g-line net
-                                   (str "ln-" line-num)
-                                   (heaviest-station net)))))))
+     ;; Otherwise, find a pivot and create a new line using it
+     (let [pivot (last (first (heaviest-station net)))
+           new-line (sn-l/g-line net (str "ln-" line-num) pivot)]
+       (recur limit
+              (inc line-num)
+              (add-line net new-line))))))
 
 (comment
   (do
@@ -68,18 +91,24 @@
     ;; When the network is empty, coordinates are the middle of the map, and the
     ;; angle is a random number.
     (def pivot (heaviest-station empty))
+    ;; => #'subway-nets.network/pivot
+    
 
     ;; Create a new generated line using previously generated pivot and empty net
     (def first-line (sn-l/g-line empty
                                  "ln-0"
-                                 pivot))
-
+                                 (last (first pivot))))
+    
     ;; Test adding first-line to an empty network
-    (add-line empty first-line)
+    (def one-line (add-line empty first-line))
+    one-line
 
     ;; The main function. Generate a network with n lines. In this case n = 5;
+    ;;FIX
     (g-network 5)
     
+    (heaviest-station empty)
+    ;; => {:angle 0.5059656302411475, :coordinates {:x 680, :y 355}, :id "st-0"}
     
     ; --------------------------------- TODO --------------------------------- ;
     
