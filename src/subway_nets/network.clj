@@ -15,7 +15,7 @@
   "Get a vector with all the stations in the network"
   [net]
   ;; Create a vector by iterating over each station in each line
-  (apply conj
+  (apply into
          (map #(-> % :stations)
               (-> net :lines))))
 
