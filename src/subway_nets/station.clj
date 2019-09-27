@@ -71,10 +71,6 @@
               (conj usage-loads
                     (math/nearest-neighbor stations rand-point)))))))
 
-(let [rand-point [(rand 50) (rand 60)]]
-  (conj [[[10 20] 9.926457]]
-        (math/nearest-neighbor [[10 20] [30 40] [50 60]] rand-point)))
-
 ; (comment 
   (do
     ;; stations-load is defined using hard-coded values. Fix this? 
