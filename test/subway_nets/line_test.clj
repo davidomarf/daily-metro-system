@@ -1,99 +1,35 @@
 (ns subway-nets.line-test
   (:require [clojure.test :refer :all]
-            [clojure.test.check :as tc]
-            [clojure.test.check.generators :as gen]
-            [clojure.test.check.properties :as prop]
+            [clojure.spec.test.alpha :as t]
+            [subway-nets.spec-check :as sc]
             [subway-nets.line :refer :all]))
 
-;; When lost, check:
-;;   https://github.com/clojure/test.check#testcheck
-;;   https://github.com/clojure/test.check/blob/master/doc/intro.md
+(def hundred-tests {:clojure.spec.test.check/opts {:num-tests 100}})
 
-(def subway-tuple
-  "Generator for subway tuples: [ '' [] ]"
-  (gen/tuple gen/string-alphanumeric (gen/vector gen/string-alphanumeric)))
+(deftest subway-line-test
+  "Check subway-line"
+  (is (sc/spec-check `subway-line hundred-tests)))
 
-(def subway-line-prop
-  (prop/for-all [[g-id g-stations] subway-tuple] 
-                (let [s (subway-line g-id g-stations)]
-                  (and (= g-id (:id s))
-                       (= (count g-stations) (count (:stations s)))
-                       (= g-stations (:stations s))
-                       (= (:start s) (first (:stations s)))
-                       (= (:end s) (last (:stations s)))))))
+(deftest add-station-middle-test
+  "Check add-station-middle"
+  (is (sc/spec-check `add-station-middle hundred-tests)))
 
-(def add-station-middle-prop
-  (prop/for-all [[g-id g-stations] subway-tuple
-                 g-station-id gen/string-alphanumeric]
-                (let [line (subway-line g-id g-stations)
-                      return (add-station-middle line g-station-id)]
-                  (or 
-                   ;; Line size is smaller than 2 (there can't exist a middle)
-                   (and (< (count (:stations line)) 2)
-                        (nil? return))
-                   
-                   ;; Default run (line size >= 2)
-                   (and (= (:id line) (:id return))
-                        (= (inc (count (:stations line))) (count (:stations return)))
-                        (some #{g-station-id} (:stations return))
-                        (= (:start line) (:start return))
-                        (= (:end line) (:end return)))))))
+(deftest add-station-end-test
+  "Check add-station-end"
+  (is (sc/spec-check `add-station-end hundred-tests)))
 
-(def add-station-end-prop
-  (prop/for-all [[g-id g-stations] subway-tuple
-                 g-station-id gen/string-alphanumeric]
-                (let [line (subway-line g-id g-stations)
-                      return (add-station-end line g-station-id)]
-                  (and (= (:id line) (:id return))
-                       (= (inc (count (:stations line))) (count (:stations return)))
-                       (some #{g-station-id} (:stations return))
-                       (= (:start line) (:start return))
-                       (= (:end return) g-station-id)))))
+(deftest add-station-start-test
+  "Check add-station-start"
+  (is (sc/spec-check `add-station-start hundred-tests)))
 
-(def add-station-start-prop
-  (prop/for-all [[g-id g-stations] subway-tuple
-                 g-station-id gen/string-alphanumeric]
-                (let [line (subway-line g-id g-stations)
-                      return (add-station-start line g-station-id)]
-                  (and (= (:id line) (:id return))
-                       (= (inc (count (:stations line))) (count (:stations return)))
-                       (some #{g-station-id} (:stations return))
-                       (= (:end line) (:end return))
-                       (= (:start return) g-station-id)))))
+(deftest extend-terminals-test
+  "Check extend-terminals"
+  (is (sc/spec-check `extend-terminals hundred-tests)))
 
-(def extend-terminals-prop
-  (prop/for-all [[g-id g-stations] subway-tuple
-                 limit gen/small-integer]
-                (let [line (subway-line g-id g-stations)
-                      return (extend-terminals line limit)]
-                  (or
-                   ;; Limit is negative or equal to zero
-                   (and (<= limit 0)
-                        (nil? return))
+; ;; Uncomment following section when debugging. Makes it easier to track bugs.
 
-                   ;; Limit is smaller or equal to original size
-                   (and (<= limit 
-                            (count (:stations line)))
-                        (= line return))
-
-                   ;; Default run (limit > original size)
-                   (or
-                     ;; Limit = original size + 1
-                    (and (=  limit
-                             (count (:stations return)))
-                         (not= (:start line)
-                               (:start return)))
-                     ;; Limit > original size + 1
-                    (and (> limit 
-                            (inc (count (:stations line))))
-                         (not= (:start line)
-                               (:start return))
-                         (not= (:end line) 
-                               (:end return))))))))
-
-
-(tc/quick-check 20 subway-line-prop)
-(tc/quick-check 20 add-station-middle-prop)
-(tc/quick-check 20 add-station-end-prop)
-(tc/quick-check 20 add-station-start-prop)
-(tc/quick-check 20 extend-terminals-prop)
+; (t/check `subway-line hundred-tests)
+; (t/check `add-station-middle hundred-tests)
+; (t/check `add-station-end hundred-tests)
+; (t/check `add-station-start hundred-tests)
+; (t/check `extend-terminals hundred-tests)

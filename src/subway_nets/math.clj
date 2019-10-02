@@ -1,6 +1,10 @@
 (ns subway-nets.math
   "Provides mathematical operations that may be used across all the codebase"
-  (:require [quil.core :as q]))
+  (:require [clojure.math.numeric-tower :as math]
+            [quil.core :as q]))
+
+(def PI Math/PI)
+(def PI2 (* PI 2))
 
 (defn close-enough?
   "Determine if two points are separated by a distance smaller than a threshold"
