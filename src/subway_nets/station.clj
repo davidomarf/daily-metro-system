@@ -6,10 +6,6 @@
 
 (defn subway-station
   "Build subway station map"
-<<<<<<< Updated upstream
-  [id coordinates]
-  {:id id :coordinates coordinates})
-=======
   ([id coordinates]
    (subway-station id coordinates (rand PI2)))
   ([id coordinates angle]
@@ -23,7 +19,6 @@
        #(= (-> % :ret vals count) 1)
        #(= (-> % :args :id) (-> % :ret keys first))
        #(= (-> % :args :coordinates) (-> % :ret vals first :coordinates))))
->>>>>>> Stashed changes
 
 ; ---------------------------------------------------------------------------- ;
 
