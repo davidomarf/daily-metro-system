@@ -1,6 +1,9 @@
 (ns subway-nets.station
   "Provides the functions to operate over or with subway stations"
-  (:require [subway-nets.math :as math]))
+  (:require [subway-nets.math :as math]
+            [clojure.test.check.generators :as gen]
+            [clojure.spec.alpha :as s]
+            [clojure.spec.test.alpha :as t]))
 
 ; ----------------------------- Create a station ----------------------------- ;
 
