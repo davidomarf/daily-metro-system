@@ -7,7 +7,7 @@
 (defn subway-station
   "Build subway station map"
   ([id coordinates]
-   (subway-station id coordinates (rand PI2)))
+   (subway-station id coordinates (rand math/PI2)))
   ([id coordinates angle]
    {:id id :coordinates coordinates :angle angle}))
 
