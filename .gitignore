@@ -1,6 +1,6 @@
 
-# Created by https://www.gitignore.io/api/linux,clojure,leiningen,visualstudiocode
-# Edit at https://www.gitignore.io/?templates=linux,clojure,leiningen,visualstudiocode
+# Created by https://www.gitignore.io/api/linux,dotenv,clojure,leiningen,visualstudiocode
+# Edit at https://www.gitignore.io/?templates=linux,dotenv,clojure,leiningen,visualstudiocode
 
 ### Clojure ###
 pom.xml
@@ -17,6 +17,9 @@ pom.xml.asc
 .lein-failures
 .nrepl-port
 .cpcache/
+
+### dotenv ###
+.env
 
 ### Leiningen ###
 
@@ -46,4 +49,4 @@ pom.xml.asc
 # Ignore all local history of files
 .history
 
-# End of https://www.gitignore.io/api/linux,clojure,leiningen,visualstudiocode
+# End of https://www.gitignore.io/api/linux,dotenv,clojure,leiningen,visualstudiocode
