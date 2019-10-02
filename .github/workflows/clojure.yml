@@ -1,11 +1,6 @@
 name: Clojure CI
 
-on:
-  push:
-    branches:
-    - develop
-    - hotfix/*
-    - release/*
+on: [push]
 
 jobs:
   build:
