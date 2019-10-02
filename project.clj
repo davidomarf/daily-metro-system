@@ -6,4 +6,5 @@
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [org.clojure/test.check "0.10.0"]
                  [quil "3.0.0"]]
-  :main subway-nets.core)
+  :main subway-nets.core
+  :plugins [[lein-environ "1.1.0"]])
